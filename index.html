@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KAUN BANEGA LOTUS LAP RAMANUJAN</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg index">
+  <div class="overlay">
+    <header class="hero">
+      <h1 class="title">KAUN BANEGA LOTUS LAP RAMANUJAN</h1>
+      <div class="logos" role="img" aria-label="Logos">
+        <img src="llps 1.jpeg" alt="Lotus Lap Public School logo" class="logo logo-left">
+        <img src="llramanujan.png" alt="Game logo" class="logo logo-center">
+        <img src="sr.png" alt="Srinivasa Ramanujan" class="logo logo-right">
+      </div>
+      <div class="start-wrap">
+        <button id="startBtn" class="btn start-btn">START</button>
+        <div class="audio-control">
+          <button id="bgToggle" class="nav-btn">🔊</button>
+        </div>
+      </div>
+    </header>
+  </div>
+  <!-- Background audio for home page only. Place a file named `home.mp3` in the project root. -->
+  <audio id="bgAudio" src="home.mp3" loop preload="auto" autoplay playsinline></audio>
+  <script>
+    const startBtn = document.getElementById('startBtn');
+    const bg = document.getElementById('bgAudio');
+    const toggle = document.getElementById('bgToggle');
+
+    // try to play when possible; many browsers block autoplay with sound,
+    // so we attempt on user interactions (click anywhere) as well.
+    function tryPlay(){
+      if(!bg) return;
+      bg.play().then(()=>{
+        toggle.textContent = '🔊';
+      }).catch(()=>{
+        // will wait for user action
+        toggle.textContent = '🔈';
+      });
+    }
+
+    // Start playback when the user first interacts with the page
+    document.addEventListener('click', function oncePlay(){ tryPlay(); document.removeEventListener('click', oncePlay); }, {capture:true});
+
+    // Toggle audio (play/pause) via control
+    toggle.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      if(bg.paused){ bg.play().then(()=>{ toggle.textContent='🔊'; }).catch(()=>{ toggle.textContent='🔈'; }); }
+      else { bg.pause(); toggle.textContent='🔇'; }
+    });
+
+    startBtn.addEventListener('click', ()=>{
+      // reset scores and lifelines for a fresh game
+      localStorage.setItem('scoreR1', '0');
+      localStorage.setItem('scoreR2', '0');
+      localStorage.setItem('scoreR3', '0');
+      localStorage.setItem('lifelines_R1', JSON.stringify({"50-50":false,"phone":false,"poll":false}));
+      localStorage.setItem('lifelines_R2', JSON.stringify({"50-50":false,"phone":false,"poll":false}));
+      localStorage.setItem('lifelines_R3', JSON.stringify({"50-50":false,"phone":false,"poll":false}));
+      // stop audio before navigating
+      try{ bg.pause(); bg.currentTime = 0; }catch(e){}
+      window.location.href = 'round1.html';
+    });
+
+    // attempt autoplay immediately on DOMContentLoaded and on load
+    document.addEventListener('DOMContentLoaded', tryPlay, {once:true});
+    window.addEventListener('load', tryPlay);
+  </script>
+</body>
+</html>

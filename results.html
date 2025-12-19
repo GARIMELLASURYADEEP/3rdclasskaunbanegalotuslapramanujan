@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Results</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg results-page">
+  <div class="overlay">
+    <div style="max-width:1000px;width:100%;text-align:center;color:#fff;padding:30px">
+      <h1 class="title">FINAL RESULTS</h1>
+      <div class="results" id="resultsContainer">
+        <div class="card">
+          <h3>Round 1</h3>
+          <p id="r1">...</p>
+        </div>
+        <div class="card">
+          <h3>Round 2</h3>
+          <p id="r2">...</p>
+        </div>
+        <div class="card">
+          <h3>Round 3</h3>
+          <p id="r3">...</p>
+        </div>
+        <div class="card" style="min-width:320px;align-self:center">
+          <h3>Total Score</h3>
+          <p id="total" style="font-size:1.6rem"></p>
+        </div>
+      </div>
+      <div style="margin-top:24px">
+        <a href="index.html" class="btn start-btn">PLAY AGAIN</a>
+      </div>
+    </div>
+  </div>
+  <script>
+    const r1 = Number(localStorage.getItem('scoreR1')||0);
+    const r2 = Number(localStorage.getItem('scoreR2')||0);
+    const r3 = Number(localStorage.getItem('scoreR3')||0);
+    document.getElementById('r1').textContent = `${r1} / 5 correct`;
+    document.getElementById('r2').textContent = `${r2} / 5 correct`;
+    document.getElementById('r3').textContent = `${r3} / 5 correct`;
+    const total = r1 + r2 + r3;
+    document.getElementById('total').textContent = `${total} / 15`;
+  </script>
+  <!-- Result page audio: plays last.mp3 once when results page is shown -->
+  <audio id="resultsAudio" src="last.mp3" preload="auto"></audio>
+  <script>
+    const resultsAudio = document.getElementById('resultsAudio');
+    function tryPlayResults(){
+      if(!resultsAudio) return;
+      resultsAudio.play().catch(()=>{
+        // wait for user gesture
+        document.addEventListener('click', function playOnce(){ resultsAudio.play().catch(()=>{}); document.removeEventListener('click', playOnce, {capture:true}); }, {capture:true});
+      });
+    }
+    // start when page loads
+    document.addEventListener('DOMContentLoaded', tryPlayResults, {once:true});
+    // stop audio when navigating away
+    window.addEventListener('beforeunload', ()=>{ try{ resultsAudio.pause(); resultsAudio.currentTime = 0; }catch(e){} });
+    // ensure PLAY AGAIN link stops audio immediately
+    const playAgain = document.querySelector('a.btn.start-btn');
+    if(playAgain){ playAgain.addEventListener('click', (e)=>{ try{ resultsAudio.pause(); resultsAudio.currentTime = 0; }catch(err){} }); }
+  </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Round 1</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg">
+  <div class="overlay round-intro">
+    <img src="llramanujan.png" style="width:140px;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,0.6)">
+    <div class="round-title">ROUND 1</div>
+    <button id="r1start" class="btn start-btn">START ROUND 1</button>
+  </div>
+  <script>
+    function shuffle(array){
+      for(let i=array.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[array[i],array[j]]=[array[j],array[i]]}
+    }
+    document.getElementById('r1start').addEventListener('click', ()=>{
+      // fresh lifelines
+      localStorage.setItem('lifelines_R1', JSON.stringify({"50-50":false,"phone":false,"poll":false}));
+      // create randomized order for round1 and persist
+      const order = [0,1,2,3,4]; shuffle(order);
+      localStorage.setItem('order_R1', JSON.stringify(order));
+      window.location.href = 'r1q1.html';
+    });
+  </script>
+</body>
+</html>

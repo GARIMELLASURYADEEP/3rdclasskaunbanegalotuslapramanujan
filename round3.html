@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Round 3</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg">
+  <div class="overlay round-intro">
+    <img src="llramanujan.png" style="width:140px;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,0.6)">
+    <div class="round-title">ROUND 3</div>
+    <button id="r3start" class="btn start-btn">START ROUND 3</button>
+  </div>
+  <script>
+    function shuffle(array){
+      for(let i=array.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[array[i],array[j]]=[array[j],array[i]]}
+    }
+    document.getElementById('r3start').addEventListener('click', ()=>{
+      localStorage.setItem('lifelines_R3', JSON.stringify({"50-50":false,"phone":false,"poll":false}));
+      const order = [0,1,2,3,4]; shuffle(order);
+      localStorage.setItem('order_R3', JSON.stringify(order));
+      window.location.href = 'r3q1.html';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>R1 Q4</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg question-page" data-round="1" data-q="3">
+  <div class="overlay">
+    <div class="stage">
+      <aside class="panel">
+        <div class="lifelines">
+          <button id="lifeline50" class="lifeline-btn">50-50</button>
+          <button id="lifelinePhone" class="lifeline-btn">Phone a Friend</button>
+          <button id="lifelinePoll" class="lifeline-btn">Audience Poll</button>
+        </div>
+      </aside>
+      <main class="panel">
+        <div id="timer" class="timer">60</div>
+        <div id="question" class="question-box">Loading question...</div>
+        <div id="options" class="options">
+          <div class="option" data-index="0"><div class="label">A</div><div class="text"></div></div>
+          <div class="option" data-index="1"><div class="label">B</div><div class="text"></div></div>
+          <div class="option" data-index="2"><div class="label">C</div><div class="text"></div></div>
+          <div class="option" data-index="3"><div class="label">D</div><div class="text"></div></div>
+        </div>
+      </main>
+      <aside class="panel right-actions">
+        <button id="skipBtn" class="nav-btn">SKIP</button>
+        <button id="nextBtn" class="nav-btn" style="display:none">NEXT</button>
+      </aside>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

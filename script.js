@@ -16,7 +16,7 @@
   }, {once:true});
   const questionsByRound = {
     1: [
-      {q: "In 4582 the digit in the hundred’s place is?", opts:['5','4','8','2'], a:1},
+      {q: "In 4582 the digit in the hundred’s place is?", opts:['5','4','8','2'], a:2},
       {q: 'Successor of 7829 is?', opts:['7828','7892','7830','7329'], a:2},
       {q: 'A shape with 3 sides is called?', opts:['Square','Triangle','Cone','Cube'], a:1},
       {q: 'The bottom number of a fraction is called?', opts:['Numerator','Whole number','Denominator','None of these'], a:2},

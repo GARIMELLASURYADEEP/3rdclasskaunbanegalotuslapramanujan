@@ -48,11 +48,12 @@
   <script>
     const resultsAudio = document.getElementById('resultsAudio');
     function tryPlayResults(){
-      if(!resultsAudio) return;
-      resultsAudio.play().catch(()=>{
-        // wait for user gesture
-        document.addEventListener('click', function playOnce(){ resultsAudio.play().catch(()=>{}); document.removeEventListener('click', playOnce, {capture:true}); }, {capture:true});
-      });
+        if(!resultsAudio) return;
+        try{ resultsAudio.muted = false; resultsAudio.volume = 1.0; }catch(e){}
+        resultsAudio.play().catch(()=>{
+          // wait for user gesture
+          document.addEventListener('click', function playOnce(){ resultsAudio.play().catch(()=>{}); document.removeEventListener('click', playOnce, {capture:true}); }, {capture:true});
+        });
     }
     // start when page loads
     document.addEventListener('DOMContentLoaded', tryPlayResults, {once:true});

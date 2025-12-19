@@ -15,6 +15,7 @@
         <img src="llramanujan.png" alt="Game logo" class="logo logo-center">
         <img src="sr.png" alt="Srinivasa Ramanujan" class="logo logo-right">
       </div>
+      
       <div class="start-wrap">
         <button id="startBtn" class="btn start-btn">START</button>
         <div class="audio-control">
@@ -30,10 +31,10 @@
     const bg = document.getElementById('bgAudio');
     const toggle = document.getElementById('bgToggle');
 
-    // try to play when possible; many browsers block autoplay with sound,
-    // so we attempt on user interactions (click anywhere) as well.
+    // ensure audio is unmuted and at full volume, then try to play.
     function tryPlay(){
       if(!bg) return;
+      try{ bg.muted = false; bg.volume = 1.0; }catch(e){}
       bg.play().then(()=>{
         toggle.textContent = '🔊';
       }).catch(()=>{

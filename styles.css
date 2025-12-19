@@ -116,7 +116,10 @@ body.index .title{position:static;top:auto;left:auto;transform:none;opacity:1;z-
   .round-title{font-size:3.2rem}
 }
 body{
-  background: radial-gradient(ellipse at center, rgba(2,22,51,0.8) 0%, rgba(1,8,20,0.9) 60%), url('kbcbg.png') center/cover no-repeat fixed;
+  background: radial-gradient(ellipse at center, rgba(2,22,51,0.5) 0%, rgba(1,8,20,0.6) 60%), url('hotseat.png') center/cover no-repeat fixed;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   display:flex;
   align-items:center;
   justify-content:center;

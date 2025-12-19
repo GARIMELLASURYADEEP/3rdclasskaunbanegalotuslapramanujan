@@ -1,5 +1,19 @@
 // Shared script for quiz: questions, timers, lifelines, scoring, navigation
 (function(){
+  // Try to unmute and autoplay any <audio> elements on user-visible pages.
+  document.addEventListener('DOMContentLoaded', ()=>{
+    try{
+      const audios = Array.from(document.querySelectorAll('audio'));
+      audios.forEach(a=>{
+        try{ a.muted = false; a.volume = 1.0; }catch(e){}
+        try{
+          a.play().catch(()=>{
+            document.addEventListener('click', function playOnce(){ a.play().catch(()=>{}); document.removeEventListener('click', playOnce, {capture:true}); }, {capture:true});
+          });
+        }catch(e){}
+      });
+    }catch(e){}
+  }, {once:true});
   const questionsByRound = {
     1: [
       {q: "In 4582 the digit in the hundred’s place is?", opts:['5','4','8','2'], a:1},
@@ -87,6 +101,7 @@
     try{
       clockAudio = new Audio('clock.mp3');
       clockAudio.loop = true;
+      try{ clockAudio.muted = false; }catch(e){}
       clockAudio.volume = 0.6;
       // try to autoplay; if blocked, play on first user interaction
       clockAudio.play().catch(()=>{

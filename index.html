@@ -58,9 +58,12 @@
       localStorage.setItem('scoreR1', '0');
       localStorage.setItem('scoreR2', '0');
       localStorage.setItem('scoreR3', '0');
-      localStorage.setItem('lifelines_R1', JSON.stringify({"50-50":false,"phone":false,"poll":false}));
-      localStorage.setItem('lifelines_R2', JSON.stringify({"50-50":false,"phone":false,"poll":false}));
-      localStorage.setItem('lifelines_R3', JSON.stringify({"50-50":false,"phone":false,"poll":false}));
+      // reset global lifelines (single-use across the full game)
+      localStorage.setItem('lifelines_global', JSON.stringify({"50-50":false,"phone":false,"poll":false}));
+      // clear any stored question orders so new shuffle occurs
+      localStorage.removeItem('order_R1');
+      localStorage.removeItem('order_R2');
+      localStorage.removeItem('order_R3');
       // stop audio before navigating
       try{ bg.pause(); bg.currentTime = 0; }catch(e){}
       window.location.href = 'round1.html';

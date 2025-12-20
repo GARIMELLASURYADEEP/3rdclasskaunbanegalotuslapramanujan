@@ -5,10 +5,13 @@
     try{
       const audios = Array.from(document.querySelectorAll('audio'));
       audios.forEach(a=>{
+        // Ensure the home background audio (`bgAudio`) only autoplays on the index page
+        if(a.id === 'bgAudio' && !document.body.classList.contains('index')) return;
         try{ a.muted = false; a.volume = 1.0; }catch(e){}
         try{
           a.play().catch(()=>{
-            document.addEventListener('click', function playOnce(){ a.play().catch(()=>{}); document.removeEventListener('click', playOnce, {capture:true}); }, {capture:true});
+            const playOnce = function(){ a.play().catch(()=>{}); document.removeEventListener('click', playOnce, {capture:true}); };
+            document.addEventListener('click', playOnce, {capture:true});
           });
         }catch(e){}
       });
@@ -52,6 +55,8 @@
 
   function qs(sel){return document.querySelector(sel)}
   function qsa(sel){return Array.from(document.querySelectorAll(sel))}
+
+  const GLOBAL_LIFELINE_KEY = 'lifelines_global';
 
   // helper to read page context
   const page = document.body;
@@ -130,12 +135,16 @@
         opt.classList.remove('correct','wrong','disabled');
         opt.style.display = '';
       });
-      // lifelines state
-      const lifKey = 'lifelines_R'+round;
-      const lif = JSON.parse(localStorage.getItem(lifKey) || '{"50-50":false,"phone":false,"poll":false}');
-      if(lif['50-50']) lif50.classList.add('disabled'); else lif50.classList.remove('disabled');
-      if(lif['phone']) lifPhone.classList.add('disabled'); else lifPhone.classList.remove('disabled');
-      if(lif['poll']) lifPoll.classList.add('disabled'); else lifPoll.classList.remove('disabled');
+      // lifelines state (global across full game)
+      let lifGlobal = null;
+      try{ lifGlobal = JSON.parse(localStorage.getItem(GLOBAL_LIFELINE_KEY)); }catch(e){ lifGlobal = null }
+      if(!lifGlobal || typeof lifGlobal !== 'object'){
+        lifGlobal = {"50-50":false,"phone":false,"poll":false};
+        localStorage.setItem(GLOBAL_LIFELINE_KEY, JSON.stringify(lifGlobal));
+      }
+      if(lifGlobal['50-50']) lif50.classList.add('disabled'); else lif50.classList.remove('disabled');
+      if(lifGlobal['phone']) lifPhone.classList.add('disabled'); else lifPhone.classList.remove('disabled');
+      if(lifGlobal['poll']) lifPoll.classList.add('disabled'); else lifPoll.classList.remove('disabled');
       // reset buttons
       nextBtn.style.display='none';
       skipBtn.style.display='inline-block';
@@ -199,29 +208,72 @@
 
     // lifelines
     function useLifeline(name, removeCount){
-      const key = 'lifelines_R'+round;
-      const lif = JSON.parse(localStorage.getItem(key) || '{"50-50":false,"phone":false,"poll":false}');
-      if(lif[name]) return; // already used
-      // choose incorrect options
+      // Use a single global lifeline store for the entire game
+      let lifG = null;
+      try{ lifG = JSON.parse(localStorage.getItem(GLOBAL_LIFELINE_KEY)); }catch(e){ lifG = null }
+      if(!lifG || typeof lifG !== 'object') lifG = {"50-50":false,"phone":false,"poll":false};
+      if(lifG[name]) return; // already used globally
+      // choose incorrect options (for 50-50 or if removeCount>0)
       const incorrect = [];
       data.opts.forEach((_,i)=>{ if(i!==data.a) incorrect.push(i); });
-      // shuffle
       for(let i=incorrect.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [incorrect[i],incorrect[j]]=[incorrect[j],incorrect[i]]; }
       const toRemove = incorrect.slice(0,removeCount);
       toRemove.forEach(idx=>{
         const opt = optionsWrap.querySelector(`.option[data-index="${idx}"]`);
         if(opt){ opt.style.display='none'; opt.classList.add('disabled'); }
       });
-      lif[name]=true; localStorage.setItem(key,JSON.stringify(lif));
+      // mark used globally and persist
+      lifG[name] = true; localStorage.setItem(GLOBAL_LIFELINE_KEY, JSON.stringify(lifG));
+      // also store per-round for compatibility
+      try{
+        const perKey = 'lifelines_R'+round;
+        const per = JSON.parse(localStorage.getItem(perKey) || '{"50-50":false,"phone":false,"poll":false}');
+        per[name] = true; localStorage.setItem(perKey, JSON.stringify(per));
+      }catch(e){}
       // visually disable button
       if(name==='50-50') lif50.classList.add('disabled');
       if(name==='phone') lifPhone.classList.add('disabled');
       if(name==='poll') lifPoll.classList.add('disabled');
     }
 
+    function formatTime(s){
+      const mm = String(Math.floor(s/60)).padStart(2,'0');
+      const ss = String(s%60).padStart(2,'0');
+      return `${mm}:${ss}`;
+    }
+
+    function startLifelinePause(name, seconds){
+      // if already used globally, ignore
+      let lifG = null;
+      try{ lifG = JSON.parse(localStorage.getItem(GLOBAL_LIFELINE_KEY)); }catch(e){ lifG = null }
+      if(!lifG || typeof lifG !== 'object') lifG = {"50-50":false,"phone":false,"poll":false};
+      if(lifG[name]) return;
+      // consume lifeline globally (no option removal for phone/poll)
+      useLifeline(name, 0);
+      // pause main timer
+      clearInterval(timer);
+      // show lifeline countdown element
+      const existing = qs('#lifelineCountdown'); if(existing) existing.remove();
+      const lifDiv = document.createElement('div'); lifDiv.id = 'lifelineCountdown'; lifDiv.className = 'lifeline-countdown';
+      lifDiv.textContent = formatTime(seconds);
+      // insert next to main timer
+      if(timerEl && timerEl.parentNode) timerEl.parentNode.insertBefore(lifDiv, timerEl.nextSibling);
+      // disable options while lifeline is active
+      locked = true; optEls.forEach(o=>o.classList.add('disabled'));
+      // run countdown for lifeline duration
+      let rem = seconds;
+      const lifInterval = setInterval(()=>{
+        rem -= 1; lifDiv.textContent = formatTime(rem);
+        if(rem <= 0){ clearInterval(lifInterval); try{ lifDiv.remove(); }catch(e){};
+          // resume main timer if there's remaining question time
+          if(timeLeft > 0){ locked = false; startTimer(); }
+        }
+      }, 1000);
+    }
+
     lif50.addEventListener('click', ()=>{ useLifeline('50-50',2); });
-    lifPhone.addEventListener('click', ()=>{ useLifeline('phone',1); });
-    lifPoll.addEventListener('click', ()=>{ useLifeline('poll',1); });
+    lifPhone.addEventListener('click', ()=>{ startLifelinePause('phone', 120); });
+    lifPoll.addEventListener('click', ()=>{ startLifelinePause('poll', 120); });
 
     // initialize
     loadQuestion();

@@ -59,9 +59,23 @@
     document.addEventListener('DOMContentLoaded', tryPlayResults, {once:true});
     // stop audio when navigating away
     window.addEventListener('beforeunload', ()=>{ try{ resultsAudio.pause(); resultsAudio.currentTime = 0; }catch(e){} });
-    // ensure PLAY AGAIN link stops audio immediately
+    // ensure PLAY AGAIN link stops audio immediately and resets global lifelines/scores/orders
     const playAgain = document.querySelector('a.btn.start-btn');
-    if(playAgain){ playAgain.addEventListener('click', (e)=>{ try{ resultsAudio.pause(); resultsAudio.currentTime = 0; }catch(err){} }); }
+    if(playAgain){
+      playAgain.addEventListener('click', (e)=>{
+        e.preventDefault();
+        try{ resultsAudio.pause(); resultsAudio.currentTime = 0; }catch(err){}
+        // reset scores and lifelines for a fresh game
+        localStorage.setItem('scoreR1', '0');
+        localStorage.setItem('scoreR2', '0');
+        localStorage.setItem('scoreR3', '0');
+        localStorage.setItem('lifelines_global', JSON.stringify({"50-50":false,"phone":false,"poll":false}));
+        localStorage.removeItem('order_R1');
+        localStorage.removeItem('order_R2');
+        localStorage.removeItem('order_R3');
+        window.location.href = 'index.html';
+      });
+    }
   </script>
 </body>
 </html>

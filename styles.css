@@ -281,3 +281,28 @@ body{
   .play-btn{font-size:18px;padding:10px 28px}
   .title{font-size:18px;letter-spacing:3px}
 }
+
+/* Responsive helpers: make images fluid, allow logos to wrap, and tune spacing for small viewports */
+img, .logo img{max-width:100%;height:auto;display:block}
+.logos{flex-wrap:wrap;gap:18px}
+.logos::before{width:min(92vw,820px);height:min(40vh,380px)}
+.overlay{padding:clamp(12px,4vw,48px)}
+.hero{padding-inline:clamp(8px,3vw,32px)}
+.title{white-space:normal;word-break:break-word}
+.start-wrap{margin-top:clamp(18px,6vw,120px)}
+
+/* Make stage use content height on small screens so nothing gets clipped by 100vh */
+.stage{height:auto;min-height:60vh;padding:20px}
+
+@media (max-width:900px){
+  body{background-attachment:scroll}
+  .title{position:relative;top:auto;left:auto;transform:none;font-size:clamp(20px,6vw,48px);letter-spacing:normal}
+  .start-btn{width:100%;padding:14px 18px;border-radius:12px}
+  .options{grid-template-columns:1fr;gap:14px}
+}
+
+@media (max-width:420px){
+  .logo-center, .logo{width:140px;height:140px}
+  .title{font-size:clamp(16px,6vw,28px);letter-spacing:2px}
+  .play-btn{font-size:16px;padding:10px 20px}
+}

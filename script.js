@@ -29,7 +29,7 @@
       {q: 'Which shape rolls but has no edges?', opts:['Cone','Cube','Cuboid','Sphere'], a:3},
       {q: 'If 325 × 4 = 1300 then what is 325 × 8?', opts:['2800','3000','2600','3700'], a:2},
       {q: 'What is the ascending order of 3/4, 1/4, 5/4?', opts:['5/4, 3/4, 1/4','3/4, 1/4, 5/4','5/4, 1/4, 3/4','1/4, 3/4, 5/4'], a:3},
-      {q: 'How many 4 digit numbers are there between 2345 and 2355?', opts:['8','10','9','5'], a:0},
+      {q: 'How many 4 digit numbers are there between 2345 and 2355?', opts:['8','10','9','5'], a:2},
       {q: 'Find the number which when multiplied by 6 gives 72?', opts:['12','9','8','14'], a:0}
     ],
     // Round 3 pool: contains many questions; each game will pick 5 shuffled items from this pool
@@ -258,15 +258,17 @@
       lifDiv.textContent = formatTime(seconds);
       // insert next to main timer
       if(timerEl && timerEl.parentNode) timerEl.parentNode.insertBefore(lifDiv, timerEl.nextSibling);
-      // disable options while lifeline is active
-      locked = true; optEls.forEach(o=>o.classList.add('disabled'));
-      // run countdown for lifeline duration
+      // Only pause the main question timer; options remain selectable
       let rem = seconds;
       const lifInterval = setInterval(()=>{
         rem -= 1; lifDiv.textContent = formatTime(rem);
-        if(rem <= 0){ clearInterval(lifInterval); try{ lifDiv.remove(); }catch(e){};
+        if(rem <= 0){
+          clearInterval(lifInterval);
+          try{ lifDiv.remove(); }catch(e){}
           // resume main timer if there's remaining question time
-          if(timeLeft > 0){ locked = false; startTimer(); }
+          if(timeLeft > 0){
+            startTimer();
+          }
         }
       }, 1000);
     }
